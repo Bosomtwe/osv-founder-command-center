@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-$4+x$*y%ef_h3z(!306x4kgpj*4#r04=a16f4qy4t&_o41jns4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # ← temporary for MVP, later tighten to your domain
 
 
 # Application definition
@@ -150,3 +150,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
