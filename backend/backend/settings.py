@@ -63,6 +63,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://osv-backend.onrender.com"
+    "https://osv-founder-command-center.vercel.app/"
 ]
 
 # Allow React dev server
@@ -70,6 +71,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://osv-backend.onrender.com"
+    "https://osv-founder-command-center.vercel.app/"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
