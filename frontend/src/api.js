@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+//  baseURL: 'http://localhost:8000/api/',
+  // After
+  baseURL: 'https://osv-backend.onrender.com/api/',   // ← your Render URL
   withCredentials: true,
 });
 
