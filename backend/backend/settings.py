@@ -62,16 +62,18 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://osv-backend.onrender.com"
-    "https://osv-founder-command-center-git-main-miqbs-projects.vercel.app"
+    "https://osv-backend.onrender.com",
+    "https://osv-founder-command-center.vercel.app", # Main URL
+    "https://osv-founder-command-center-git-main-miqbs-projects.vercel.app",
 ]
 
 # Allow React dev server
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://osv-backend.onrender.com"
-    "https://osv-founder-command-center-git-main-miqbs-projects.vercel.app"
+    "https://osv-backend.onrender.com",
+    "https://osv-founder-command-center.vercel.app", # Main URL
+    "https://osv-founder-command-center-git-main-miqbs-projects.vercel.app", # Vercel Preview
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -174,3 +176,8 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
     }
 }
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
