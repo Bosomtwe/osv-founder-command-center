@@ -1,13 +1,95 @@
+/* src/index.css */
+
+/* 1. Tailwind Imports (Keep these at the top) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. Notion Theme Variables */
+:root {
+  --notion-bg: #ffffff;
+  --notion-sidebar-bg: #f7f6f3;
+  --notion-text: #37352f;
+  --notion-border: rgba(55, 53, 47, 0.09);
+  --notion-hover: rgba(55, 53, 47, 0.04);
+  --notion-blue: #2383e2;
+  --notion-red: #eb5757;
+}
+
+/* 3. Global Resets & Typography */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background-color: var(--notion-bg);
+  color: var(--notion-text);
+  /* The official Notion font stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* 4. Layout Containers */
+.content-container {
+  max-width: 900px; /* Notion's standard line length for readability */
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 5. Notion-style Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(55, 53, 47, 0.15);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(55, 53, 47, 0.3);
+}
+
+/* 6. Mobile Responsiveness */
+@media (max-width: 768px) {
+  .content-container {
+    padding: 20px 15px;
+  }
+  
+  /* Make tables scrollable on small screens */
+  .notion-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 7. Custom Components / Helpers */
+@layer components {
+  .notion-btn-primary {
+    @apply bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition-colors text-sm font-medium;
+    background-color: var(--notion-blue);
+  }
+
+  .notion-input {
+    @apply w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 outline-none focus:border-blue-400 transition-all;
+    font-size: 14px;
+  }
+}
+
+/* 8. Spinner Animation for Loading States */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
 }

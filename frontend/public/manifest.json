@@ -1,25 +1,42 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "OSV Command",
+  "name": "OSV Founder Command Center",
+  "description": "Task management and analytics dashboard for OSV Founder",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo192.png",
+      "src": "/logo512.png",
       "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "background_color": "#1976d2",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "scope": "/",
+  "theme_color": "#1976d2",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "New Task",
+      "short_name": "Task",
+      "description": "Create a new task",
+      "url": "/?new-task",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Analytics",
+      "short_name": "Stats",
+      "description": "View analytics dashboard",
+      "url": "/?analytics",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ]
 }

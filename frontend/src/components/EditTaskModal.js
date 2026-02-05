@@ -1,23 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
 import api from '../api';
 
 function EditTaskModal({ task, clients, workers, onClose, onSuccess }) {
-  const [description, setDescription] = useState(task.description);
   const [clientId, setClientId] = useState(task.client?.id || '');
   const [workerId, setWorkerId] = useState(task.assigned_worker?.id || '');
   const [dueDate, setDueDate] = useState(task.due_date || '');
   const [status, setStatus] = useState(task.status);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Handle responsive design
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Initialize BlockNote with existing JSON content (or fallback to plain text)
+  const initialContent = (() => {
+    if (typeof task.description === 'string') {
+      try {
+        return JSON.parse(task.description);
+      } catch (e) {
+        // Fallback: convert old plain text to single paragraph block
+        return [{ type: "paragraph", content: task.description }];
+      }
+    }
+    return task.description || [{ type: "paragraph", content: "" }];
+  })();
+
+  const editor = useCreateBlockNote({
+    initialContent,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    // Get current rich content as JSON
+    const richDescription = editor.document;
+
     try {
       const response = await api.patch(`tasks/${task.id}/`, {
-        description,
+        description: richDescription,           // send JSON directly
         client_id: clientId || null,
         assigned_worker_id: workerId || null,
         due_date: dueDate || null,
@@ -25,6 +58,7 @@ function EditTaskModal({ task, clients, workers, onClose, onSuccess }) {
       });
 
       onSuccess(response.data);
+      onClose();
     } catch (err) {
       setError('Failed to update task. Try again.');
       console.error(err);
@@ -36,50 +70,100 @@ function EditTaskModal({ task, clients, workers, onClose, onSuccess }) {
   return (
     <div style={{
       position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0,0,0,0.6)',
+      inset: 0,
+      background: 'rgba(0,0,0,0.5)',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: isMobile ? 'flex-start' : 'center',
       justifyContent: 'center',
-      zIndex: 1000,
+      zIndex: 2000,
+      padding: isMobile ? '20px 16px' : '0',
+      overflowY: 'auto'
     }}>
       <div style={{
         background: 'white',
-        padding: '40px',
-        borderRadius: '16px',
-        width: '600px',
-        maxWidth: '90vw',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+        padding: isMobile ? '24px 20px' : '40px',
+        borderRadius: '12px',
+        width: isMobile ? '100%' : 'min(600px, 90vw)',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+        marginTop: isMobile ? '20px' : '0'
       }}>
-        <h2 style={{ margin: '0 0 30px 0', fontSize: '24px' }}>Edit Task</h2>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '30px'
+        }}>
+          <h2 style={{ 
+            margin: 0, 
+            fontSize: isMobile ? '20px' : '24px',
+            color: '#333'
+          }}>
+            Edit Task
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '20px',
+              cursor: 'pointer',
+              color: '#666',
+              padding: '4px'
+            }}
+          >
+            ✕
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '8px', 
+              fontWeight: 'bold',
+              fontSize: isMobile ? '15px' : '14px'
+            }}>
               Description <span style={{ color: 'red' }}>*</span>
             </label>
-            <textarea
-              required
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={5}
-              style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: '8px',
-                border: '1px solid #ccc',
-                fontSize: '16px',
-              }}
-            />
+            <div style={{
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              minHeight: isMobile ? '140px' : '180px',
+              background: '#fff',
+              overflow: 'hidden',
+            }}>
+              <BlockNoteView editor={editor} />
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+            gap: isMobile ? '16px' : '20px', 
+            marginBottom: '24px' 
+          }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Client</label>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 'bold',
+                fontSize: isMobile ? '15px' : '14px'
+              }}>
+                Client
+              </label>
               <select
                 value={clientId}
                 onChange={(e) => setClientId(e.target.value)}
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: isMobile ? '14px' : '12px', 
+                  borderRadius: '8px', 
+                  border: '1px solid #ccc', 
+                  fontSize: isMobile ? '16px' : '14px',
+                  backgroundColor: '#fafafa'
+                }}
               >
                 <option value="">None</option>
                 {clients.map((client) => (
@@ -89,11 +173,25 @@ function EditTaskModal({ task, clients, workers, onClose, onSuccess }) {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Assign To</label>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 'bold',
+                fontSize: isMobile ? '15px' : '14px'
+              }}>
+                Assign To
+              </label>
               <select
                 value={workerId}
                 onChange={(e) => setWorkerId(e.target.value)}
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: isMobile ? '14px' : '12px', 
+                  borderRadius: '8px', 
+                  border: '1px solid #ccc', 
+                  fontSize: isMobile ? '16px' : '14px',
+                  backgroundColor: '#fafafa'
+                }}
               >
                 <option value="">Unassigned</option>
                 {workers.map((worker) => (
@@ -103,51 +201,116 @@ function EditTaskModal({ task, clients, workers, onClose, onSuccess }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+            gap: isMobile ? '16px' : '20px', 
+            marginBottom: '30px' 
+          }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Due Date</label>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 'bold',
+                fontSize: isMobile ? '15px' : '14px'
+              }}>
+                Due Date
+              </label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: isMobile ? '14px' : '12px', 
+                  borderRadius: '8px', 
+                  border: '1px solid #ccc', 
+                  fontSize: isMobile ? '16px' : '14px',
+                  backgroundColor: '#fafafa'
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Status</label>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 'bold',
+                fontSize: isMobile ? '15px' : '14px'
+              }}>
+                Status
+              </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: isMobile ? '14px' : '12px', 
+                  borderRadius: '8px', 
+                  border: '1px solid #ccc', 
+                  fontSize: isMobile ? '16px' : '14px',
+                  backgroundColor: '#fafafa'
+                }}
               >
                 <option value="TODO">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="DONE">Done</option>
+                <option value="BLOCKED">Blocked</option>
               </select>
             </div>
           </div>
 
-          {error && <p style={{ color: '#d32f2f', marginBottom: '20px' }}>{error}</p>}
+          {error && (
+            <p style={{ 
+              color: '#d32f2f', 
+              marginBottom: '20px',
+              padding: '12px',
+              background: '#ffebee',
+              borderRadius: '6px',
+              fontSize: isMobile ? '15px' : '14px',
+              textAlign: 'center'
+            }}>
+              {error}
+            </p>
+          )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            gap: '12px',
+            paddingTop: '20px',
+            borderTop: '1px solid #e5e7eb'
+          }}>
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              style={{ padding: '12px 24px', background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '8px' }}
+              style={{ 
+                padding: isMobile ? '14px 20px' : '12px 24px', 
+                background: '#f5f5f5', 
+                border: '1px solid #ccc', 
+                borderRadius: '8px',
+                fontSize: isMobile ? '15px' : '14px',
+                fontWeight: '500',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                minWidth: isMobile ? '100px' : 'auto'
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={loading || !description.trim()}
+              disabled={loading}
               style={{
-                padding: '12px 24px',
-                background: '#1976d2',
+                padding: isMobile ? '14px 20px' : '12px 24px',
+                background: loading ? '#9ca3af' : '#1976d2',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
+                fontSize: isMobile ? '15px' : '14px',
+                fontWeight: '500',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                minWidth: isMobile ? '140px' : 'auto'
               }}
             >
               {loading ? 'Saving...' : 'Save Changes'}

@@ -1,34 +1,26 @@
-"""
-URL configuration for backend project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ClientViewSet, WorkerViewSet, TaskViewSet
-from .views import custom_login 
-
+from .views import (
+    ClientViewSet, WorkerViewSet, TaskViewSet,
+    user_login, user_logout, check_auth, get_csrf_token,
+    #create_initial_admin
+)
 
 router = DefaultRouter()
-router.register(r'clients', ClientViewSet)
-router.register(r'workers', WorkerViewSet)
-router.register(r'tasks', TaskViewSet)
+router.register(r'clients', ClientViewSet, basename='client')
+router.register(r'workers', WorkerViewSet, basename='worker')
+router.register(r'tasks', TaskViewSet, basename='task')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),    
+    # Authentication endpoints
+    path('auth/csrf/', get_csrf_token, name='get_csrf'),
+    path('auth/login/', user_login, name='login'),
+    path('auth/logout/', user_logout, name='logout'),
+    path('auth/check/', check_auth, name='check_auth'),
+    
+    # Development endpoint (remove in production)
+#    path('auth/create-admin/', create_initial_admin, name='create_admin'),
+    
+    # API routes
     path('', include(router.urls)),
-    path('auth/', include('rest_framework.urls')),  # For session login in browsable API
-    path('login/', custom_login),  # Our new login endpoint
 ]
