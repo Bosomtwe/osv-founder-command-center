@@ -129,6 +129,9 @@ if not DEBUG:
     CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
     CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
+    # ADD THIS LINE HERE:
+    CORS_ALLOW_CREDENTIALS = True  # This allows the browser to share cookies
+
 
     #HTTP settings
     CSRF_COOKIE_SECURE = True
@@ -164,10 +167,12 @@ else:
     
     ]
 
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_HTTPONLY = False  # Must be False to allow JavaScript to read it
 SESSION_COOKIE_HTTPONLY = True
+
+SECURE_SSL_REDIRECT = True
 
 # For local development (set to True in production)
 #CSRF_COOKIE_SECURE = False
