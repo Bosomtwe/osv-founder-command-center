@@ -5,6 +5,7 @@ Django settings for backend project.
 import os
 import dj_database_url
 from pathlib import Path
+import logging
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -256,3 +257,12 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
+
+# Debug CORS
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# Log CORS settings
+logger.debug(f"DEBUG: {DEBUG}")
+logger.debug(f"CORS_ALLOWED_ORIGINS: {CORS_ALLOWED_ORIGINS}")
+logger.debug(f"CORS_ALLOW_CREDENTIALS: {CORS_ALLOW_CREDENTIALS}")
