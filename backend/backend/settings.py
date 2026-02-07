@@ -122,7 +122,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ==================== SECURITY SETTINGS ====================
 # Get frontend URL from environment
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+"""FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
 # CORS Settings
 if not DEBUG:
@@ -177,6 +177,71 @@ SECURE_SSL_REDIRECT = True
 # For local development (set to True in production)
 #CSRF_COOKIE_SECURE = False
 #SESSION_COOKIE_SECURE = False
+"""
+# ==================== SECURITY SETTINGS ====================
+# Get frontend URL from environment
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
+# CORS Settings
+if not DEBUG:
+    # Get origins from environment or use defaults
+    cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
+    csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    
+    # Filter out empty strings
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins if origin.strip()]
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins if origin.strip()]
+    
+    # Add default origins if none provided
+    if not CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS = [
+            "https://osv-founder-command-center.vercel.app",
+        ]
+    if not CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS = [
+            "https://osv-founder-command-center.vercel.app",
+        ]
+    
+    # CRITICAL: Add these lines
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+    
+    # HTTP settings
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    # Render specific
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    # Development settings
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "https://osv-founder-command-center.vercel.app",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+    
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "https://osv-founder-command-center.vercel.app",
+        "https://osv-backend.onrender.com",
+    ]
+
+# These should be outside the if/else block to apply in both environments
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
 
 # REST Framework Settings
 REST_FRAMEWORK = {
