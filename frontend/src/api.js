@@ -72,7 +72,7 @@ export const authAPI = {
     // Get CSRF token
     getCSRFToken: async () => {
         try {
-            const response = await api.get('auth/csrf/');
+            const response = await api.get('api/auth/csrf/');
             console.log('CSRF token obtained');
             return response.data.csrfToken;
         } catch (error) {
@@ -119,7 +119,7 @@ export const authAPI = {
     // Check authentication
     checkAuth: async () => {
         try {
-            const response = await api.get('auth/check/');
+            const response = await api.get('api/auth/check/');
             if (response.data.authenticated && response.data.user) {
                 localStorage.setItem('user', JSON.stringify(response.data.user));
                 localStorage.setItem('isAuthenticated', 'true');
