@@ -88,7 +88,7 @@ export const authAPI = {
             await authAPI.getCSRFToken();
             
             // Then login
-            const response = await api.post('auth/login/', { username, password });
+            const response = await api.post('api/auth/login/', { username, password });
             
             // Store user data
             if (response.data.user) {
@@ -106,7 +106,7 @@ export const authAPI = {
     // Logout
     logout: async () => {
         try {
-            await api.post('auth/logout/');
+            await api.post('api/auth/logout/');
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
